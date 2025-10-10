@@ -32,7 +32,7 @@ def createlogin():
         database.session.add(usuario)
         database.session.commit()
 
-        flash('Conta criada com sucesso! Aguarde a validação de um administrador.', 'info')
+        flash('Conta criada com sucesso!.', 'info')
         return redirect(url_for('login'))
 
     return render_template('createlogin.html', form=form_criarconta)

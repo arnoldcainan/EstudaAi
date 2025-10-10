@@ -71,7 +71,9 @@
         {# Se estiver logado, show Nova Funcionalidade / Dashboard / Sair #}
         {% if current_user.is_authenticated %}
           <li class="nav-item">
-            <a class="nav-link" href="#">Novo Estudo</a>
+            <a class="nav-link fw-bold" href="{{ url_for('novo_estudo') }}" style="color:var(--accent-color); border: 1px solid var(--accent-color); border-radius: .25rem; padding: .5rem 1rem;">
+                <i class="bi bi-plus-circle-fill"></i> Novo Estudo
+            </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('painel_usuario') }}">Dashboard</a>
