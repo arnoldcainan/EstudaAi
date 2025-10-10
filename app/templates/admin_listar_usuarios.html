@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Lista de Usuários</h1>
+    <form method="GET" action="{{ url_for('listar_usuarios') }}" class="mb-4">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>CPF</th>
+                    <th>WhatsApp</th>
+                    <th></th> <!-- Empty for button -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" name="nome" placeholder="Nome" value="{{ request.args.get('nome', '') }}">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="email" placeholder="Email" value="{{ request.args.get('email', '') }}">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="cpf" placeholder="CPF" value="{{ request.args.get('cpf', '') }}">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="whatsapp" placeholder="WhatsApp" value="{{ request.args.get('whatsapp', '') }}">
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                        <a href="{{ url_for('listar_usuarios') }}" class="btn btn-secondary">Limpar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>CPF</th>
+                <th>WhatsApp</th>
+                <th>Data de Cadastro</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.id }}</td>
+                <td>{{ usuario.nome }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.cpf }}</td>
+                <td>{{ usuario.whatsapp }}</td>
+                <td>{{ usuario.data_cadastro|to_brazilian_time }}</td>
+                <td>
+                    <a href="{{ url_for('detalhar_usuario', usuario_id=usuario.id) }}" class="btn btn-info btn-sm">Detalhes</a>
+                    <a href="{{ url_for('editar_usuario', usuario_id=usuario.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                    <form action="{{ url_for('excluir_usuario', usuario_id=usuario.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Deseja excluir este usuário?')">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

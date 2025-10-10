@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+
+<div class="container">
+    {% if current_user.is_authenticated %}
+    <h1>Olá, {{ current_user.nome }}</h1>
+    <div class="container">
+    <h1>Area restrita</h1>
+</div>
+    {% else %}
+    <h1>Identifique-se, area restrita</h1>
+    {% endif %}
+</div>
+
+
+{% endblock %}

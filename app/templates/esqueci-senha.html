@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <h2 class="mt-5">Esqueceu a Senha?</h2>
+    <p>Insira seu e-mail para receber um link de redefinição de senha.</p>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}
+            <div class="alert alert-danger">{{ form.email.errors[0] }}</div>
+            {% endif %}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Enviar Link de Recuperação</button>
+    </form>
+</div>
+{% endblock %}

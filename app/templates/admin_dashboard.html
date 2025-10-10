@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Painel Administrativo</h1>
+  <div class="row mt-4 g-3">
+
+    <!-- Card para Gerenciar Usuários -->
+    <div class="col-md-4">
+      <div class="card text-white bg-primary mb-3 d-flex flex-column h-100 shadow-sm">
+        <div class="card-header">Gerenciar Usuários</div>
+        <div class="card-body d-flex flex-column flex-grow-1">
+          <h2 class="card-title">{{ total_usuarios }}</h2>
+          <p class="card-text">Usuários cadastrados</p>
+          <div class="mt-auto">
+            <a href="{{ url_for('listar_usuarios') }}" class="btn btn-light w-100 mb-2">Ver Usuários</a>
+            <a href="{{ url_for('admin_create_user') }}" class="btn btn-light w-100">Criar Usuário</a>
+          </div>
+
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Card para Vídeo Aulas (Admin) -->
+    <div class="col-md-4">
+      <div class="card text-white bg-dark mb-3 d-flex flex-column h-100 shadow-sm">
+        <div class="card-header">Vídeo Aulas</div>
+        <div class="card-body d-flex flex-column flex-grow-1">
+          <h2 class="card-title">Gerenciar</h2>
+          <p class="card-text">Cadastre e organize as videoaulas por classificação.</p>
+          <div class="mt-auto">
+            <a href="{{ url_for('admin_videos_listar') }}" class="btn btn-light w-100">Abrir</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Card: Saúde da IA (DeepSeek) -->
+    <div class="col-md-4">
+      <div class="card bg-light mb-3 d-flex flex-column h-100 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>Saúde da IA</span>
+          <span id="aiBadge" class="badge text-bg-secondary">Aguardando</span>
+        </div>
+        <div class="card-body d-flex flex-column">
+          {% if not ai_selftest_enabled %}
+            <p class="text-muted mb-2">Self-test desativado neste ambiente.</p>
+            <code>ENABLE_AI_SELFTEST=False</code>
+            <button class="btn btn-secondary btn-sm mt-2" disabled>Testar IA</button>
+          {% else %}
+            <p class="mb-2">Clique para testar o serviço de IA (DeepSeek).</p>
+            <div class="d-flex gap-2 mb-3">
+              <button id="btnTestAI" class="btn btn-primary btn-sm">Testar IA</button>
+              <button id="btnClearAI" class="btn btn-outline-secondary btn-sm">Limpar</button>
+            </div>
+            <div id="aiSummary" class="small"></div>
+            <pre id="aiDetail" class="mt-2 p-2 bg-white border rounded small"
+                 style="max-height: 220px; overflow:auto; display:none;"></pre>
+          {% endif %}
+          <div class="mt-auto text-muted small pt-2" id="aiLastCheck"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      const enabled = {{ 'true' if ai_selftest_enabled else 'false' }};
+      if (!enabled) return;
+
+      const btn = document.getElementById('btnTestAI');
+      const btnClear = document.getElementById('btnClearAI');
+      const badge = document.getElementById('aiBadge');
+      const summary = document.getElementById('aiSummary');
+      const detail = document.getElementById('aiDetail');
+      const last = document.getElementById('aiLastCheck');
+
+      function setBadge(state) {
+        const map = {
+          idle:  ['text-bg-secondary','Aguardando'],
+          run:   ['text-bg-warning','Testando...'],
+          ok:    ['text-bg-success','OK'],
+          fail:  ['text-bg-danger','Indisponível'],
+          off:   ['text-bg-secondary','Desativado']
+        };
+        const [cls, txt] = map[state] || map.idle;
+        badge.className = 'badge ' + cls;
+        badge.textContent = txt;
+      }
+
+      function causeHint(httpStatus) {
+        switch (httpStatus) {
+          case 401: return 'Chave inválida/ausente (DEEPSEEK_API_KEY).';
+          case 402: return 'Conta sem crédito/assinatura (billing).';
+          case 403: return 'Sem permissão para o modelo/endpoint.';
+          case 408: return 'Timeout de rede/endpoint.';
+          default:  return 'Erro genérico do provedor.';
+        }
+      }
+
+      btn.addEventListener('click', async () => {
+        setBadge('run');
+        summary.textContent = '';
+        detail.style.display = 'none';
+        detail.textContent = '';
+
+        try {
+          const r = await fetch('/_ai/selftest', { method: 'GET' });
+          const ts = new Date().toLocaleString();
+          last.textContent = 'Último teste: ' + ts;
+
+          if (r.status === 404) {
+            setBadge('off');
+            summary.innerHTML = '<span class="text-muted">Self-test está desativado neste ambiente.</span>';
+            return;
+          }
+
+          const data = await r.json();
+          if (data.ok) {
+            setBadge('ok');
+            summary.innerHTML = `<strong>Status:</strong> OK<br>
+                                 <strong>Modelo respondeu:</strong> ${data.model_reply || 'OK'}`;
+            detail.style.display = 'block';
+            detail.textContent = JSON.stringify(data, null, 2);
+          } else {
+            setBadge('fail');
+            const status = data.http_status || '—';
+            const hint = causeHint(data.http_status);
+            summary.innerHTML = `<strong>Status:</strong> Indisponível<br>
+                                 <strong>HTTP:</strong> ${status}<br>
+                                 <strong>Resumo:</strong> ${data.error || 'Serviço indisponível.'}<br>
+                                 <strong>Possível causa:</strong> ${hint}`;
+            if (data.detail) {
+              detail.style.display = 'block';
+              detail.textContent = typeof data.detail === 'string'
+                ? data.detail
+                : JSON.stringify(data.detail, null, 2);
+            }
+          }
+        } catch (err) {
+          setBadge('fail');
+          summary.innerHTML = `<strong>Status:</strong> Indisponível<br>
+                               <strong>Erro cliente:</strong> ${err && err.message ? err.message : err}`;
+        }
+      });
+
+      btnClear.addEventListener('click', () => {
+        setBadge('idle');
+        summary.textContent = '';
+        detail.style.display = 'none';
+        detail.textContent = '';
+        last.textContent = '';
+      });
+    })();
+    </script>
+
+
+
+
+  </div>
+</div>
+{% endblock %}

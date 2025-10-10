@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+
+{% block title %}
+Estuda AI - Domine Seu Conhecimento com Inteligência
+{% endblock %}
+
+{% block head %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+  :root {
+      /* NOVA PALETA: AZUL PROFUNDO E ROXO VIBRANTE (Com Acabamento Ciano) */
+      --primary-color: #3f51b5; /* Indigo/Azul Profundo Base */
+      --primary-dark: #303f9f;
+      --primary-light: #7986cb;
+
+      --secondary-color: #7c4dff; /* Roxo Vibrante */
+      --secondary-dark: #653ecc;
+      --secondary-light: #b388ff;
+
+      --accent-color: #00bcd4; /* Ciano Elétrico (Destaque AI) */
+      --accent-dark: #0097a7;
+      --accent-light: #4dd0e1;
+
+      /* Neutral Colors */
+      --dark-color: #2d3436;
+      --dark-light: #636e72;
+      --light-color: #ddd;
+      --light-dark: #b2bec3;
+      --white: #ffffff;
+      --black: #000000;
+
+      /* Text Colors */
+      --text-primary: #2d3436;
+      --text-secondary: #636e72;
+      --text-light: #b2bec3;
+      --text-white: #ffffff;
+
+      /* Background Colors - Clean Look: bg-secondary agora é branco */
+      --bg-primary: #ffffff;
+      --bg-secondary: #ffffff;
+      --bg-dark: #2d3436;
+
+      /* Ajuste dos gradientes para a nova paleta */
+      --bg-gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); /* Indigo para Roxo */
+      --bg-gradient-secondary: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-light) 100%); /* Ciano para Roxo Claro */
+      --bg-gradient-dark: linear-gradient(135deg, var(--dark-color) 0%, var(--dark-light) 100%);
+
+      /* Shadows (Mantidos) */
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+      --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+
+      /* Border Radius (Mantidos) */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      --radius-full: 9999px;
+
+      /* Transitions (Mantidos) */
+      --transition-fast: 0.15s ease-in-out;
+      --transition-normal: 0.3s ease-in-out;
+      --transition-slow: 0.5s ease-in-out;
+
+      /* Tipografia (Mantidos) */
+      --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-secondary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Reset e Utilitários (Mantidos) */
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+
+  body {
+      font-family: var(--font-primary);
+      line-height: 1.6;
+      color: var(--text-primary);
+      background-color: var(--bg-primary);
+      overflow-x: hidden;
+  }
+
+  /* Seção Hero */
+  .hero-section {
+      position: relative;
+      min-height: 100vh;
+      background: var(--bg-gradient-primary); /* Usa o novo Indigo/Roxo */
+      display: flex;
+      align-items: center;
+      overflow-x: hidden;
+  }
+
+  /* NOVO: Estilo para Cartões de Arquitetura (Substituindo os Programas) */
+  .architecture-card {
+      padding: 30px;
+      border-radius: var(--radius-lg);
+      background-color: var(--bg-primary);
+      border: 1px solid var(--light-dark); /* Borda sutil para definir o cartão */
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-normal);
+      height: 100%;
+  }
+  .architecture-card:hover {
+      border-color: var(--accent-color);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-5px);
+  }
+
+  /* NOVO: Ajuste para Section Header para manter o alinhamento central */
+  .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<body>
+    <section id="home" class="hero-section">
+        <div class="floating-element">
+            <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        </div>
+        <div class="floating-element">
+            <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 30%;"></div>
+        </div>
+        <div class="floating-element">
+            <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 20%;"></div>
+        </div>
+
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="hero-content" data-aos="fade-right">
+                        <h1 class="hero-title">
+                            Domine Qualquer Assunto com <span class="text-gradient-secondary">Inteligência Artificial</span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            Faça upload de seus PDFs/DOCX e deixe a IA gerar **resumos focados**, **testes de fixação** e **feedback de estudo** em segundos.
+                        </p>
+                        <div class="d-flex flex-column flex-md-row gap-3">
+                            <a href="{{ url_for('createlogin') }}" class="btn-gradient btn-lg">
+                                <i class="bi bi-book-fill"></i>
+                                Começar a Estudar Grátis
+                            </a>
+                            <a href="#architecture" class="btn-outline-gradient btn-lg">
+                                <i class="bi bi-cpu"></i>
+                                Ver Arquitetura do Projeto
+                            </a>
+                        </div>
+                        <div class="hero-stats" data-aos="fade-up" data-aos-delay="300">
+                            <div class="hero-stat">
+                                <span class="hero-stat-number">2M+</span>
+                                <span class="hero-stat-label">Páginas Processadas</span>
+                            </div>
+                            <div class="hero-stat">
+                                <span class="hero-stat-number">98%</span>
+                                <span class="hero-stat-label">Satisfação de Usuários</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5" data-aos="fade-left">
+                    <div class="text-center">
+                        <div style="width: 350px; height: 350px; background: rgba(255,255,255,0.1); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-book-half" style="font-size: 7rem; color: rgba(255,255,255,0.8);"></i>
+                            <i class="bi bi-cpu-fill" style="position: absolute; font-size: 2rem; color: rgba(255,255,255,0.9); top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">
+                    O Ciclo do <span class="text-gradient">Aprendizado Acelerado</span>
+                </h2>
+                <p class="section-subtitle">
+                    Transforme documentos brutos em conhecimento fixado com nossas 3 principais ferramentas.
+                </p>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: var(--primary-light); color: var(--white);">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <h3 class="feature-title">1. Resumo Imediato</h3>
+                        <p class="feature-description">
+                            A IA usa **LangChain** para processar seu PDF e extrair os pontos cruciais do conteúdo.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: var(--secondary-light); color: var(--white);">
+                            <i class="bi bi-patch-question"></i>
+                        </div>
+                        <h3 class="feature-title">2. Teste de Fixação (QCM)</h3>
+                        <p class="feature-description">
+                            Geração de **5 perguntas de múltipla escolha** personalizadas para testar sua compreensão do resumo.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: var(--accent-light); color: var(--dark-color);">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <h3 class="feature-title">3. Feedback Focado</h3>
+                        <p class="feature-description">
+                            Após a correção, a IA te dá um **Guia de Revisão** indicando os tópicos de maior dificuldade.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">
+                    A Força da <span class="text-gradient">Arquitetura Assíncrona</span>
+                </h2>
+                <p class="section-subtitle">
+                    O processamento pesado da IA é gerenciado por microsserviços, garantindo escalabilidade e confiabilidade.
+                </p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="architecture-card">
+                        <div class="category-icon" style="color: var(--primary-color);">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <h3 class="category-title mt-3">RabbitMQ: Fila de Tarefas Garantida</h3>
+                        <p class="category-description">
+                            O Flask envia o upload para o RabbitMQ, que garante que o **processamento da IA não será perdido** e será executado de forma confiável em segundo plano.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="architecture-card">
+                        <div class="category-icon" style="color: var(--accent-color);">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <h3 class="category-title mt-3">LangChain: O Microsserviço de IA</h3>
+                        <p class="category-description">
+                            Um worker Python (consumidor do RabbitMQ) executa a lógica do **LangChain** e **desacopla o processamento** da sua aplicação web principal, evitando travamentos.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="architecture-card">
+                        <div class="category-icon" style="color: var(--secondary-color);">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                        <h3 class="category-title mt-3">Kafka: Notificação em Tempo Real</h3>
+                        <p class="category-description">
+                            Após a conclusão da IA, o worker publica um evento no **Kafka**, que notifica o frontend sobre o **"Estudo Pronto"** em milissegundos, usando um *event stream*.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer bg-dark">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand text-white">
+                        <i class="bi bi-cpu-fill me-2"></i>Estuda AI
+                    </div>
+                    <p class="footer-description text-white-50">
+                        Revolucionando os estudos com inteligência artificial. Transforme sua rotina de aprendizado e alcance seus objetivos acadêmicos.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook" class="text-white">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" aria-label="Instagram" class="text-white">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" aria-label="Twitter" class="text-white">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" aria-label="YouTube" class="text-white">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="text-white mb-3">Plataforma</h5>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('home') }}#features" class="text-white">Recursos</a></li>
+                        <li><a href="{{ url_for('home') }}#architecture" class="text-white">Arquitetura</a></li>
+                        <li><a href="/pricing" class="text-white">Preços</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="text-white mb-3">Suporte</h5>
+                    <ul class="footer-links">
+                        <li><a href="/help" class="text-white">Central de Ajuda</a></li>
+                        <li><a href="/contact" class="text-white">Contato</a></li>
+                        <li><a href="/faq" class="text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="text-white mb-3">Empresa</h5>
+                    <ul class="footer-links">
+                        <li><a href="/about" class="text-white">Sobre Nós</a></li>
+                        <li><a href="/blog" class="text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="text-white mb-3">Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="/privacy" class="text-white">Privacidade</a></li>
+                        <li><a href="/terms" class="text-white">Termos de Uso</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="text-white-50">&copy; 2025 Estuda AI. Todos os direitos reservados. Desenvolvido com ❤️ para aprimorar o conhecimento.</p>
+            </div>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+    // Iniciar o AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        offset: 100
+    });
+
+    // Efeito do Navbar scroll
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+        } else {
+            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+            navbar.style.boxShadow = 'none';
+        }
+    });
+
+    // Ancoragem de links (Atualizado para incluir a seção #architecture)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Add loading animation para botões
+    document.querySelectorAll('.btn-gradient, .btn-outline-gradient').forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Este bloco agora foca apenas nos links de Ação/Registro
+            if (this.href && (this.href.includes('/createlogin') || this.href.includes('/novo_estudo'))) {
+                e.preventDefault();
+
+                // Add loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Carregando...';
+                this.style.pointerEvents = 'none';
+
+                // Simulação
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 1000);
+            }
+        });
+    });
+
+    // Parallax
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const parallax = document.querySelectorAll('.floating-element');
+        const speed = 0.5;
+
+        parallax.forEach((element, index) => {
+            const yPos = -(scrolled * speed * (index + 1) * 0.3);
+            element.style.transform = `translateY(${yPos}px)`;
+        });
+    });
+
+    // Contador (Mantido)
+    function animateCounter(element, target, duration = 2000) {
+        let start = 0;
+        const increment = target / (duration / 16);
+
+        function updateCounter() {
+            start += increment;
+            if (start < target) {
+                element.textContent = Math.floor(start).toLocaleString();
+                requestAnimationFrame(updateCounter);
+            } else {
+                element.textContent = target.toLocaleString();
+            }
+        }
+
+        updateCounter();
+    }
+
+    // Trigger de contador da página
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const statNumbers = entry.target.querySelectorAll('.hero-stat-number');
+                statNumbers.forEach(stat => {
+                    const text = stat.textContent;
+                    if (text.includes('M+')) { // Adicionado M+ para milhões
+                        const num = parseInt(text.replace('M+', '')) * 1000000;
+                        stat.textContent = '0';
+                        animateCounter(stat, num);
+                        stat.textContent = (num / 1000000) + 'M+';
+                    } else if (text.includes('%')) {
+                        const num = parseInt(text.replace('%', ''));
+                        stat.textContent = '0%';
+                        animateCounter(stat, num);
+                        stat.textContent = num + '%';
+                    }
+                });
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 }); // Aumentado o threshold para melhor precisão
+
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) {
+        observer.observe(heroStats);
+    }
+
+    //Fim da Script
+</script>
+{% endblock %}

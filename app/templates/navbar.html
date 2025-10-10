@@ -1,0 +1,96 @@
+<style>
+    /* A cor primária será ajustada no home.html para um azul/ciano tech */
+    .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        transition: 0.3s ease-in-out;
+        padding: 1rem 0;
+    }
+
+    .navbar-brand {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        font-size: 1.5rem;
+        /* A cor será puxada da variável --primary-color */
+        color: #0077b6; /* Usando um azul tech temporário, será ajustado pelo CSS do home.html */
+        text-decoration: none;
+    }
+
+    .navbar-nav .nav-link {
+        font-weight: 500;
+        color: #2d3436;
+        margin: 0 0.5rem;
+        transition: 0.15s ease-in-out;
+    }
+
+    .navbar-nav .nav-link:hover {
+        /* A cor será ajustada no CSS do home.html */
+        color: #0077b6;
+    }
+
+    @media (max-width: 768px) {
+        .navbar-nav .nav-link {
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+    }
+</style>
+
+<nav class="navbar navbar-light bg-white navbar-expand-lg fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('home') }}">
+      <i class="bi bi-cpu-fill me-2"></i>Estuda AI
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Alternar navegação">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+
+        {# Sempre mostramos o link “Início” #}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('home') }}">Início</a>
+        </li>
+
+        {# Se estivermos na home, exibimos os links âncora #}
+        {% if request.endpoint == 'home' %}
+          <li class="nav-item">
+            <a class="nav-link" href="#features">Recursos</a>
+          </li>
+
+        {% endif %}
+
+        {# Se estiver logado, show Nova Funcionalidade / Dashboard / Sair #}
+        {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="#">Novo Estudo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('painel_usuario') }}">Dashboard</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('sair') }}">Sair</a>
+          </li>
+        {% else %}
+          {# Se visitante, show Entrar / Registrar #}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('login') }}">Entrar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('createlogin') }}">Registrar</a>
+          </li>
+        {% endif %}
+
+      </ul>
+    </div>
+  </div>
+</nav>

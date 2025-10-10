@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Trocar Senha</h2>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('mudar_senha') }}" method="post">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.senha_antiga.label(class="form-label") }}
+                            {{ form.senha_antiga(class="form-control") }}
+                            {% for error in form.senha_antiga.errors %}
+                                <div class="alert danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.nova_senha.label(class="form-label") }}
+                            {{ form.nova_senha(class="form-control") }}
+                            {% for error in form.nova_senha.errors %}
+                                <div class="alert danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.confirmacao_nova_senha.label(class="form-label") }}
+                            {{ form.confirmacao_nova_senha(class="form-control") }}
+                            {% for error in form.confirmacao_nova_senha.errors %}
+                                <div class="alert danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

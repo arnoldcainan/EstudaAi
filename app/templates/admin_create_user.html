@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <form method="POST" action="" class="border p-4 mt-2">
+        {{ form.csrf_token }}
+        <h2>Cadastrar</h2>
+        <fieldset>
+
+            <div class="form-group">
+                {{ form.nome.label(class="form-control-label") }}
+                {% if form.nome.errors %}
+                    {{ form.nome(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for erro in form.nome.errors %}
+                            {{ erro }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.nome(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.cpf.label(class="form-control-label") }}
+                {% if form.cpf.errors %}
+                    {{ form.cpf(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for erro in form.cpf.errors %}
+                            {{ erro }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.cpf(class="form-control", placeholder="Digite seu CPF sem pontos ou traços") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.whatsapp.label(class="form-control-label") }}
+                {% if form.whatsapp.errors %}
+                    {{ form.whatsapp(class="form-control is-invalid", id="id_whatsapp", placeholder="(00) 00000-0000") }}
+                    <div class="invalid-feedback">
+                        {% for erro in form.whatsapp.errors %}
+                            {{ erro }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.whatsapp(class="form-control", id="id_whatsapp", placeholder="(00) 00000-0000") }}
+                {% endif %}
+            </div>
+
+
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {% if form.email.errors %}
+                    {{ form.email(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for erro in form.email.errors %}
+                            {{ erro }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email(class="form-control") }}
+                {% endif %}
+            </div>
+
+        </fieldset>
+        {{ form.botao_submit(class="btn btn-primary mt-2") }}
+    </form>
+</div>
+{% endblock %}

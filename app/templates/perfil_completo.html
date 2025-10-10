@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block title %}Editar Perfil • CoreMove Fitness{% endblock %}
+
+{% block head %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#00d4aa; --secondary:#6c5ce7;
+    --grad:linear-gradient(135deg,var(--primary) 0%, var(--secondary) 100%);
+    --text:#2d3436; --muted:#636e72; --white:#fff;
+    --bd:#e7e9f3;
+    --r-xl:1rem; --r-2xl:1.5rem; --r-full:9999px;
+    --shadow-lg:0 10px 15px rgba(0,0,0,.10);
+    --shadow-xl:0 20px 25px rgba(0,0,0,.15);
+  }
+  body{ font-family:'Inter', system-ui, Segoe UI, Arial, sans-serif; color:var(--text); }
+  .wrap{ max-width:980px; margin:0 auto; padding:18px 16px 28px; }
+
+  /* HERO mini */
+  .hero-mini{
+    background: var(--grad); color:#fff; border-radius: var(--r-2xl);
+    padding: clamp(16px,3vw,24px); box-shadow: var(--shadow-xl);
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .hero-mini h1{ font-family:'Poppins',sans-serif; font-weight:800; margin:0; font-size: clamp(20px,3vw,28px); }
+  .btn-outline-light{
+    border:2px solid rgba(255,255,255,.85); color:#fff; background:transparent;
+    border-radius: var(--r-full); padding:.45rem .9rem; font-weight:700; text-decoration:none;
+    display:inline-flex; align-items:center; gap:.5rem; transition:.18s ease;
+  }
+  .btn-outline-light:hover{ background:#fff; color:var(--primary); transform: translateY(-2px); }
+
+  /* Card suave */
+  .card-soft{ background:#fff; border:1px solid rgba(0,0,0,.06); border-radius: var(--r-2xl); box-shadow: var(--shadow-lg); }
+
+  .section-title{ font-weight:800; font-size:1.05rem; margin-bottom:.25rem; }
+  .section-sub{ color:var(--muted); font-size:.9rem; margin-bottom:.75rem; }
+
+  .input-group-text{ background:#fafbff; border-color:#e9ecf4; }
+  .help-text{ font-size:.85rem; color:var(--muted); }
+
+  .btn-gradient{
+    background: var(--grad); border:none; color:#fff; font-weight:800;
+    border-radius: var(--r-full); padding:.55rem 1rem; text-decoration:none;
+    display:inline-flex; align-items:center; gap:.5rem; transition:.18s ease;
+  }
+  .btn-gradient:hover{ transform: translateY(-2px); box-shadow: var(--shadow-lg); color:#fff; }
+  .btn-outline{
+    border:2px solid var(--primary); color:var(--primary); background:transparent;
+    border-radius: var(--r-full); padding:.5rem .95rem; font-weight:700;
+  }
+  .btn-outline:hover{ background:var(--grad); color:#fff; transform: translateY(-2px); }
+
+  .avatar-preview{
+    width:120px; height:120px; border-radius:50%; object-fit:cover; box-shadow:0 6px 16px rgba(0,0,0,.12);
+    border:3px solid #fff;
+  }
+
+  @media print { .wrap{ max-width:100%; padding:0; } .hero-mini a{ display:none !important; } .card-soft{ box-shadow:none; border-color:#ddd; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero-mini mb-3">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <a href="{{ url_for('painel_usuario') }}"
+         class="btn btn-outline-light btn-sm"
+         onclick="if (history.length > 1) { event.preventDefault(); history.back(); }">← Voltar</a>
+      <h1 class="m-0">Editar Perfil</h1>
+    </div>
+    {% if current_user.foto_perfil %}
+      <img src="data:image/png;base64,{{ current_user.foto_perfil }}" alt="avatar" class="avatar-preview">
+    {% endif %}
+  </section>
+
+  <!-- FLASHES -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- FORM -->
+  <form method="POST" enctype="multipart/form-data" novalidate class="card-soft">
+    {{ form.hidden_tag() }}
+
+    <div class="p-3 p-md-4">
+      <div class="mb-2">
+        <div class="section-title">Informações básicas</div>
+        <div class="section-sub">Use seu nome como deseja ser chamado e um WhatsApp válido para contato.</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          {{ form.nome.label(class="form-label") }}
+          {{ form.nome(class="form-control" + (' is-invalid' if form.nome.errors else '')) }}
+          {% for error in form.nome.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="col-md-6">
+          {{ form.whatsapp.label(class="form-label") }}
+          {{ form.whatsapp(class="form-control" + (' is-invalid' if form.whatsapp.errors else ''), placeholder="(11) 9 9999-9999") }}
+          {% for error in form.whatsapp.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <div class="mb-2">
+        <div class="section-title">Dados físicos</div>
+        <div class="section-sub">Esses dados alimentam seus cálculos de TMB, TDEE e cardápios.</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          {{ form.data_nascimento.label(class="form-label") }}
+          {{ form.data_nascimento(class="form-control" + (' is-invalid' if form.data_nascimento.errors else '')) }}
+          {% for error in form.data_nascimento.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-4">
+          {{ form.genero.label(class="form-label") }}
+          {{ form.genero(class="form-select" + (' is-invalid' if form.genero.errors else '')) }}
+          {% for error in form.genero.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-4">
+          {{ form.nivel_atividade.label(class="form-label") }}
+          {{ form.nivel_atividade(class="form-select" + (' is-invalid' if form.nivel_atividade.errors else '')) }}
+          {% for error in form.nivel_atividade.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-6">
+          {{ form.altura_cm.label(class="form-label") }}
+          <div class="input-group">
+            {{ form.altura_cm(class="form-control" + (' is-invalid' if form.altura_cm.errors else ''), step="0.1", min="0") }}
+            <span class="input-group-text">cm</span>
+          </div>
+          {% for error in form.altura_cm.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-6">
+          {{ form.peso_kg.label(class="form-label") }}
+          <div class="input-group">
+            {{ form.peso_kg(class="form-control" + (' is-invalid' if form.peso_kg.errors else ''), step="0.1", min="0") }}
+            <span class="input-group-text">kg</span>
+          </div>
+          {% for error in form.peso_kg.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          {# OBJETIVO como SELECT — se já for SelectField, isso basta #}
+          {{ form.objetivo.label(class="form-label") }}
+          {% if form.objetivo.type == 'SelectField' %}
+            {{ form.objetivo(class="form-select" + (' is-invalid' if form.objetivo.errors else '')) }}
+          {% else %}
+            {# Fallback se form.objetivo for StringField/TextField #}
+            <select name="objetivo" class="form-select{{ ' is-invalid' if form.objetivo.errors }}">
+              {% set cur = form.objetivo.data or (perfil.objetivo if perfil is defined else '') %}
+              {% for opt in ['Manter','Ganhar massa','Emagrecer'] %}
+                <option value="{{ opt }}" {{ 'selected' if cur and cur.lower()==opt.lower() else '' }}>{{ opt }}</option>
+              {% endfor %}
+            </select>
+          {% endif %}
+          <div class="help-text mt-1">Isso orienta a distribuição de macros e calorias.</div>
+          {% for error in form.objetivo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-6">
+          {{ form.foto_perfil.label(class="form-label") }}
+          {{ form.foto_perfil(class="form-control", id="fotoPerfil") }}
+          {% for err in form.foto_perfil.errors %}<div class="invalid-feedback d-block">{{ err }}</div>{% endfor %}
+          <div class="help-text mt-1">PNG/JPG até ~2MB. A prévia aparece acima no cabeçalho.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 p-3 border-top" style="border-top-color:#eef1f7;">
+      <a href="{{ url_for('painel_usuario') }}"
+         class="btn btn-outline"
+         onclick="if (history.length > 1) { event.preventDefault(); history.back(); }">Cancelar</a>
+      <button type="submit" class="btn-gradient">{{ form.submit.label.text }}</button>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Pré-visualização da foto no hero
+  (function(){
+    const input = document.getElementById('fotoPerfil');
+    if (!input) return;
+    input.addEventListener('change', () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // se já existe img no hero, troca; senão cria
+        let img = document.querySelector('.hero-mini .avatar-preview');
+        if (!img) {
+          img = document.createElement('img');
+          img.className = 'avatar-preview';
+          document.querySelector('.hero-mini').appendChild(img);
+        }
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  })();
+</script>
+{% endblock %}

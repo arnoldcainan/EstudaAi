@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Editar Usuário</h1>
+    <form method="POST" action="{{ url_for('editar_usuario', usuario_id=usuario.id) }}">
+        {{ form.hidden_tag() }}
+        {{ form.usuario_id }}
+        <div class="form-group">
+            <label for="nome">Nome</label>
+            {{ form.nome(class="form-control") }}
+            {% for error in form.nome.errors %}
+                <small class="text-danger">{{ error }}</small>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            {{ form.email(class="form-control") }}
+            {% for error in form.email.errors %}
+                <small class="text-danger">{{ error }}</small>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="cpf">CPF</label>
+            {{ form.cpf(class="form-control") }}
+            {% for error in form.cpf.errors %}
+                <small class="text-danger">{{ error }}</small>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="whatsapp">WhatsApp</label>
+            {{ form.whatsapp(class="form-control") }}
+            {% for error in form.whatsapp.errors %}
+                <small class="text-danger">{{ error }}</small>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="is_admin">É Administrador?</label>
+            {{ form.is_admin(class="form-control") }}
+        </div>
+        <div class="form-group">
+          <label for="is_validated">Validar Conta?</label>
+          {{ form.is_validated(class="form-check-input") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{{ url_for('listar_usuarios') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+
+</div>
+{% endblock %}

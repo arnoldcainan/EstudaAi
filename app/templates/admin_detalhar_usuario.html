@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Detalhes do Usuário</h1>
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3>{{ usuario.nome }}</h3>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID:</strong> {{ usuario.id }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ usuario.email }}</li>
+                <li class="list-group-item"><strong>CPF:</strong> {{ usuario.cpf }}</li>
+                <li class="list-group-item"><strong>WhatsApp:</strong> {{ usuario.whatsapp }}</li>
+                <li class="list-group-item"><strong>Data de Cadastro:</strong> {{ usuario.data_cadastro|to_brazilian_time }}</li>
+                <li class="list-group-item">
+                    <strong>É Administrador:</strong>
+                    {% if usuario.is_admin %}
+                        <span class="badge bg-success">Sim</span>
+                    {% else %}
+                        <span class="badge bg-danger">Não</span>
+                    {% endif %}
+                </li>
+                <li class="list-group-item">
+                    <strong>Conta Validada:</strong>
+                    {% if usuario.is_validated %}
+                        <span class="badge bg-success">Sim</span>
+                    {% else %}
+                        <span class="badge bg-danger">Não</span>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        <div class="card-footer text-center">
+            <a href="{{ url_for('listar_usuarios') }}" class="btn btn-primary">Voltar</a>
+            <a href="{{ url_for('editar_usuario', usuario_id=usuario.id) }}" class="btn btn-warning">Editar</a>
+            <form action="{{ url_for('excluir_usuario', usuario_id=usuario.id) }}" method="POST" style="display:inline;">
+                <button class="btn btn-danger" onclick="return confirm('Deseja realmente excluir este usuário?')">Excluir</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
