@@ -25,7 +25,7 @@ import os
 def admin_dashboard():
     total_usuarios = Usuario.query.count()
 
-    return render_template('admin_dashboard.html',
+    return render_template('admin/admin_dashboard.html',
                            total_usuarios=total_usuarios,
                            ai_selftest_enabled=app.config.get('ENABLE_AI_SELFTEST', False))
 
@@ -53,7 +53,7 @@ def admin_create_user():
         flash(f'Usuário criado com e-mail: {form.email.data}. Senha inicial: {senha_gerada}', 'success')
         return redirect(url_for('listar_usuarios'))
 
-    return render_template('admin_create_user.html', form=form)
+    return render_template('admin/admin_create_user.html', form=form)
 
 
 @app.route('/admin/usuarios', methods=['GET'])
@@ -76,7 +76,7 @@ def listar_usuarios():
         query = query.filter(Usuario.whatsapp.ilike(f"%{whatsapp}%"))
 
     usuarios = query.all()
-    return render_template('admin_listar_usuarios.html', usuarios=usuarios)
+    return render_template('admin/admin_listar_usuarios.html', usuarios=usuarios)
 
 
 @app.route('/admin/usuario/<int:usuario_id>', methods=['GET'])
@@ -84,7 +84,7 @@ def listar_usuarios():
 @admin_required
 def detalhar_usuario(usuario_id):
     usuario = Usuario.query.get_or_404(usuario_id)
-    return render_template('admin_detalhar_usuario.html', usuario=usuario)
+    return render_template('admin/admin_detalhar_usuario.html', usuario=usuario)
 
 
 @app.route('/admin/usuario/<int:usuario_id>/editar', methods=['GET', 'POST'])
@@ -111,7 +111,7 @@ def editar_usuario(usuario_id):
             database.session.rollback()
             flash('Erro ao salvar alterações. Tente novamente.', 'danger')
 
-    return render_template('admin_editar_usuario.html', form=form, usuario=usuario)
+    return render_template('admin/admin_editar_usuario.html', form=form, usuario=usuario)
 
 
 @app.route('/admin/usuario/<int:usuario_id>/excluir', methods=['POST'])
