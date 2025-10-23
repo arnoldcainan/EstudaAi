@@ -22,7 +22,7 @@ def painel_usuario():
     ]
 
     return render_template(
-        'painel_usuario.html',
+        'user/painel_usuario.html',
         usuario=current_user,
         ultimos_resumos_simulados=ultimos_resumos_simulados
     )
@@ -53,7 +53,7 @@ def novo_estudo():
 
     # Se for GET, renderiza o formulário de upload
     return render_template(
-        'novo_estudo.html',
+        'user/novo_estudo.html',
         usuario=current_user,
         # Adicione o título da página
         titulo_pagina='Novo Estudo'
