@@ -3,6 +3,11 @@ from datetime import datetime, date
 from flask_login import UserMixin
 from pytz import timezone
 
+
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Text
+from sqlalchemy.orm import relationship
+import json
+
 from sqlalchemy import JSON, UniqueConstraint
 from sqlalchemy.ext.mutable import MutableDict
 
@@ -31,3 +36,39 @@ class Usuario(database.Model, UserMixin):
 
 
 
+############ ESTUDOS
+
+class Estudo(database.Model):
+    __tablename__ = 'estudos'
+
+    id = database.Column(database.Integer, primary_key=True)
+    user_id = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
+
+    titulo = database.Column(database.String(255), nullable=False)
+    data_criacao = database.Column(database.DateTime, default=now_brazil)
+
+    # Conteúdo principal
+    resumo = database.Column(database.Text, nullable=False)
+    status = database.Column(database.String(50), default='pronto', nullable=False)
+    caminho_arquivo = database.Column(database.String(512), nullable=True)
+
+    # Relações
+    questoes = database.relationship("Questao", backref="estudo", lazy='dynamic', cascade="all, delete-orphan")
+    usuario = database.relationship("Usuario")
+
+
+class Questao(database.Model):
+    __tablename__ = 'questoes'
+
+    id = database.Column(database.Integer, primary_key=True)
+    estudo_id = database.Column(database.Integer, database.ForeignKey('estudos.id'), nullable=False)
+
+    pergunta = database.Column(database.Text, nullable=False)
+
+    # Armazena as opções como TEXT (string JSON)
+    opcoes_json = database.Column(database.Text, nullable=False)
+    resposta_correta = database.Column(database.String(255), nullable=False)
+
+    # Campos de resultado do usuário
+    resposta_usuario = database.Column(database.String(255), nullable=True)
+    correta = database.Column(database.Boolean, nullable=True)

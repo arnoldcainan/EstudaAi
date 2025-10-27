@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+          # Use guest/guest para o ambiente de teste local
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+
+  web:
+    build: .  # <--- Esta linha aponta para o Dockerfile na mesma pasta
+    # ... (restante da configuração do serviço web) ...
+
+  ai_worker:
+    build: .  # <--- Esta linha aponta para o Dockerfile na mesma pasta
+    # ... (restante da configuração do worker) ...

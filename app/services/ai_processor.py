@@ -1,14 +1,12 @@
 import os
 from typing import Dict, List, Optional
 from langchain_community.document_loaders import PyPDFLoader, UnstructuredWordDocumentLoader, TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain.output_parsers import PydanticOutputParser
-from .deepseek import DeepSeekLLM  # Importa sua conexão existente DeepSeek
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.prompts import PromptTemplate
+from pydantic import BaseModel, Field
+from langchain_core.output_parsers import PydanticOutputParser
+from app.integrations.deepseek import DeepSeekLLM
 
-
-# --- 1. Definição do Esquema de Saída (Pydantic para o QCM) ---
 
 class Questao(BaseModel):
     """Modelo Pydantic para uma única questão de múltipla escolha."""

@@ -1,12 +1,20 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from services. import process_study_material
-
+from app.services.ai_processor import process_study_material
+from app import database
+from app.services.task_producer import send_ai_task
+import os
 from app import app
 from app.filters import asdict as _as_dict  # ✅ importar função pura
 
-# Pasta onde os arquivos serão salvos TEMPORARIAMENTE
+# --- Imports da Aplicação (CRUCIAIS) ---
+from app import app, database # Instância do Flask e SQLAlchemy
+from app.models import Estudo, Questao # Modelos para persistência (Resolve 'Estudo')
+from app.services.task_producer import send_ai_task # Produtor RabbitMQ (Seu novo serviço)
+# ----------------------------------------
+
+# Configuração de Uploads (Variáveis globais do módulo)
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'app', 'static', 'uploads')
 ALLOWED_EXTENSIONS = {'pdf', 'docx', 'txt'}
 
@@ -39,52 +47,81 @@ def painel_usuario():
     )
 
 
+# app/routes/painel.py (Função novo_estudo)
+
 # NOVA ROTA DE NOVO ESTUDO
 @app.route('/novo-estudo', methods=['GET', 'POST'])
 @login_required
 def novo_estudo():
+    # Renderiza o formulário de upload se for um GET
+    if request.method == 'GET':
+        # Renderiza com o caminho ajustado 'user/novo_estudo.html' se for o caso
+        return render_template(
+            'user/novo_estudo.html',
+            usuario=current_user,
+            titulo_pagina='Novo Estudo'
+        )
+
+    # Lógica POST (Upload)
     if request.method == 'POST':
+        # 1. Coleta e Validação
         file = request.files.get('documento')
         nome_estudo = request.form.get('nome_estudo')
 
-        # 1. VALIDAÇÃO
         if not file or file.filename == '' or not allowed_file(file.filename):
             flash('Por favor, selecione um arquivo válido (PDF, DOCX, TXT).', 'danger')
             return redirect(request.url)
 
-        # 2. SALVAR ARQUIVO LOCALMENTE (Temporário)
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
+        # 2. Salvar Arquivo Localmente (Define filename e file_path)
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+        filename = secure_filename(file.filename)  # Define 'filename'
+        file_path = os.path.join(UPLOAD_FOLDER, filename)  # Define 'file_path'
 
-        # --- FASE 1: CHAMA O PROCESSAMENTO DE IA (SÍNCRONO) ---
-        flash('Upload recebido. Processamento de IA iniciado, AGUARDE...', 'warning')
+        try:
+            file.save(file_path)
+        except Exception as e:
+            flash(f'Erro ao salvar arquivo temporário: {e}', 'danger')
+            return redirect(request.url)
 
-        # Este é o ponto BLOQUEANTE (o site vai esperar)
-        ia_result = process_study_material(file_path, titulo=nome_estudo or filename)
+        # 3. CRIA REGISTRO INICIAL NO DB (STATUS "PROCESSANDO")
+        try:
+            novo_estudo = Estudo(  # Resolve 'Estudo'
+                user_id=current_user.id,
+                titulo=nome_estudo or filename,
+                resumo="Processamento de IA iniciado...",
+                status='processando',
+                caminho_arquivo=file_path
+            )
+            database.session.add(novo_estudo)
+            database.session.commit()
 
-        # 3. TRATAMENTO DE RESULTADO E PERSISTÊNCIA (Bloco 2.4)
-        if ia_result['status'] == 'completed':
-            # Aqui você salvaria no seu banco de dados (Modelo Estudo)
-            # Ex: Estudo.create(user_id=current_user.id, **ia_result)
+            # --- 4. CHAMA O PRODUTOR RABBITMQ (ASSÍNCRONO) ---
+            send_ai_task(  # Resolve 'send_ai_task'
+                estudo_id=novo_estudo.id,
+                file_path=file_path,  # Resolve 'file_path'
+                user_id=current_user.id
+            )
 
-            # Limpa o arquivo após o uso (importante!)
-            os.remove(file_path)
-
-            flash('✅ Estudo gerado com sucesso! Você pode ver o resumo.', 'success')
-            # Redireciona para a página de visualização do estudo (em breve)
+            flash(
+                '✅ Upload recebido! O processamento de IA foi iniciado em segundo plano. Acompanhe o status no Dashboard.',
+                'info')
             return redirect(url_for('painel_usuario'))
 
-        else:
-            # Limpa o arquivo mesmo em caso de falha
-            os.remove(file_path)
+        except ConnectionError as e:
+            # Em caso de falha no RabbitMQ, limpamos o DB e o arquivo
+            database.session.delete(novo_estudo)
+            database.session.commit()
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
-            flash(f"❌ Falha ao processar o arquivo: {ia_result.get('error', 'Erro desconhecido.')}", 'danger')
+            flash(f"❌ Erro de serviço: {e}. Tente novamente mais tarde.", 'danger')
+            # CORREÇÃO: url_for deve ser usado com nome de rota, não caminho de template
             return redirect(url_for('novo_estudo'))
 
-    # ... (código GET) ...
-    return render_template(
-        'novo_estudo.html',
-        usuario=current_user,
-        titulo_pagina='Novo Estudo'
-    )
+        except Exception as e:
+            # Tratamento de erro genérico do DB/commit
+            database.session.rollback()
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            flash(f"❌ Erro ao iniciar a tarefa: {e}. Tente novamente.", 'danger')
+            return redirect(url_for('novo_estudo'))

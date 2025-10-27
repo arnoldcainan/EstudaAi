@@ -2,6 +2,34 @@
 import os, requests
 from flask import current_app
 
+
+# NOVO: Classe Wrapper DeepSeekLLM para compatibilidade com LangChain
+class DeepSeekLLM:
+    """
+    Classe Wrapper para usar a função chat do DeepSeek em contextos como LangChain.
+    """
+
+    def __init__(self, model: str = "deepseek-chat", temperature: float = 0.7):
+        self.model = model
+        self.temperature = temperature
+
+    def invoke(self, prompt: str) -> str:
+        """
+        Adapta a chamada de string única do LangChain para o formato de mensagens da API.
+        """
+        messages = [{"role": "user", "content": prompt}]
+
+        # Chama sua função chat existente
+        return chat(
+            messages=messages,
+            model=self.model,
+            temperature=self.temperature
+        )
+
+    # Opcional: Para compatibilidade com outras interfaces LLM
+    def __call__(self, prompt: str) -> str:
+        return self.invoke(prompt)
+
 class DeepSeekError(Exception):
     """Erro sanitizado para consumo pelo app."""
     def __init__(self, public_msg: str, http_status: int | None = None, detail: str | None = None):
