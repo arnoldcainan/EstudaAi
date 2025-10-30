@@ -40,22 +40,10 @@ app.config['GA_TRACKING_ID'] = 'G-QQ23BG6WBV'
 
 app.config['API_KEY'] = os.getenv('API_KEY')
 
-# #####API ASAAS
-# app.config['ASAAS_API_KEY'] = os.getenv('ASAAS_API_KEY')
-# app.config['ASAAS_BASE_URL'] = os.getenv('ASAAS_BASE_URL')
-# app.config['ASAAS_WEBHOOK_TOKEN'] = os.getenv('ASAAS_WEBHOOK_TOKEN')
 
 # Diretório base para uploads dentro da pasta static
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-# Diretórios específicos para boletos e comprovantes
-app.config['UPLOAD_BOLETOS'] = os.path.join(app.config['UPLOAD_FOLDER'], 'boletos')
-app.config['UPLOAD_COMPROVANTES'] = os.path.join(app.config['UPLOAD_FOLDER'], 'comprovantes')
-
-# Cria os diretórios se não existirem
-os.makedirs(app.config['UPLOAD_BOLETOS'], exist_ok=True)
-os.makedirs(app.config['UPLOAD_COMPROVANTES'], exist_ok=True)
 
 # Inicializações
 database = SQLAlchemy(app)
@@ -70,15 +58,27 @@ login_manager.login_message_category = 'info'
 
 # Inicialização do banco de dados e importação de rotas
 from app import models
-engine = sqlalchemy.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-inspector = sqlalchemy.inspect(engine)
-if not inspector.has_table("usuario"):
-    with app.app_context():
-        database.drop_all()
+
+
+# engine = sqlalchemy.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+# inspector = sqlalchemy.inspect(engine)
+# if not inspector.has_table("usuario"):
+#     with app.app_context():
+#         #database.drop_all()
+#         database.create_all()
+#         print("Base de dados criada")
+# else:
+#     print("Base de dados já existente")
+# # Cria tabelas se ainda não existirem; sem "drop_all"
+
+with app.app_context():
+    inspector = sqlalchemy.inspect(database.engine)
+    if "usuario" not in inspector.get_table_names():
         database.create_all()
         print("Base de dados criada")
-else:
-    print("Base de dados já existente")
+    else:
+        print("Base de dados já existente")
+
 from .filters import register_template_filters
 register_template_filters(app)
 from app.routes import *

@@ -24,28 +24,32 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-
-# Rota existente
 @app.route('/painel', methods=['GET'])
 @login_required
 def painel_usuario():
-    # ... (código existente) ...
+    # 1. Carregar dados REAIS do DB
+    ultimos_estudos = Estudo.query.filter_by(user_id=current_user.id) \
+        .order_by(Estudo.data_criacao.desc()) \
+        .limit(5).all()
 
-    # 2. Carregar dados específicos do Estudo AI aqui (Ex: ultimos resumos, estatisticas)
-    ultimos_resumos_simulados = [
-        # Dados simulados para o painel
-        {'id': 1, 'titulo': 'Introdução a Microserviços', 'data': '10/01/2024', 'paginas': 15, 'qcm_feito': True,
-         'score': 85},
-        {'id': 2, 'titulo': 'Padrões de Design com Python', 'data': '05/12/2023', 'paginas': 25, 'qcm_feito': False,
-         'score': None},
-    ]
+    # 2. Simular estatísticas gerais (Você pode substituí-las por consultas DB reais depois)
+    # Total de estudos concluídos
+    total_estudos_feitos = Estudo.query.filter_by(user_id=current_user.id, status='pronto').count()
+    # Total de questões (simulado por enquanto, pois o QCM está nas relações)
+    total_qcms = total_estudos_feitos * 5
+    score_medio = 78  # Valor hardcoded, substitua por consulta de agregação no DB
 
     return render_template(
         'user/painel_usuario.html',
         usuario=current_user,
-        ultimos_resumos_simulados=ultimos_resumos_simulados
-    )
+        # Variáveis atualizadas
+        ultimos_estudos=ultimos_estudos,
 
+        # Variáveis de estatísticas simuladas
+        total_estudos_feitos=total_estudos_feitos,
+        total_qcms=total_qcms,
+        score_medio=score_medio
+    )
 
 # app/routes/painel.py (Função novo_estudo)
 
@@ -79,6 +83,9 @@ def novo_estudo():
 
         try:
             file.save(file_path)
+            # --- DEBUG PRINT ---
+            app.logger.info(f"[Flask WEB] Arquivo salvo em (caminho absoluto): {file_path}")
+            # ---------------------
         except Exception as e:
             flash(f'Erro ao salvar arquivo temporário: {e}', 'danger')
             return redirect(request.url)
@@ -96,6 +103,10 @@ def novo_estudo():
             database.session.commit()
 
             # --- 4. CHAMA O PRODUTOR RABBITMQ (ASSÍNCRONO) ---
+            # --- DEBUG PRINT ---
+            app.logger.info(
+                f"[Flask WEB] Enviando tarefa para RabbitMQ: (Estudo ID: {novo_estudo.id}, Path: {file_path})")
+            # ---------------------
             send_ai_task(  # Resolve 'send_ai_task'
                 estudo_id=novo_estudo.id,
                 file_path=file_path,  # Resolve 'file_path'

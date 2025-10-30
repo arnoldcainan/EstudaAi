@@ -3,15 +3,75 @@ version: '3.8'
 services:
   rabbitmq:
     image: rabbitmq:3-management
+    container_name: estuda_ai_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     environment:
-          # Use guest/guest para o ambiente de teste local
-          RABBITMQ_DEFAULT_USER: guest
-          RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - estuda_ai_net
 
+  # 1. Serviço Web (Flask)
   web:
-    build: .  # <--- Esta linha aponta para o Dockerfile na mesma pasta
-    # ... (restante da configuração do serviço web) ...
+    build: .  # Constrói a partir do Dockerfile do Flask (EstudaAi/Dockerfile)
+    container_name: estuda_ai_flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app # Código Flask (EstudaAi)
+      # --- Volumes Compartilhados ---
+      - uploads_volume:/app/app/static/uploads # Volume compartilhado de Uploads
+      - ./instance:/app/instance # Volume compartilhado do DB
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      # --- CORREÇÃO CRÍTICA ---
+      # Força o Flask (via app/__init__.py -> os.getenv) a usar o DB
+      # no volume compartilhado '/app/instance', e não o DB relativo '/app/projeto.db'.
+      DATABASE_URL: sqlite:////app/instance/projeto.db
+    depends_on:
+      - rabbitmq
+    networks:
+      - estuda_ai_net
+    # Comando de inicialização corrigido (do seu log anterior)
+    command: ["flask", "run", "--host=0.0.0.0", "--port=5000"]
 
+  # 2. Serviço AI Worker (Projeto Separado)
   ai_worker:
-    build: .  # <--- Esta linha aponta para o Dockerfile na mesma pasta
-    # ... (restante da configuração do worker) ...
+    build:
+      context: ../estuda-ai-worker/ # Caminho para o diretório do Worker
+      dockerfile: Dockerfile      # Aponta para o Dockerfile do Worker [cite: Dockerfile]
+    container_name: estuda_ai_worker
+    volumes:
+      - ../estuda-ai-worker:/app # Código Worker
+      # --- Volumes Compartilhados (Idênticos ao 'web') ---
+      - uploads_volume:/app/app/static/uploads # MESMO volume de Uploads
+      - ./instance:/app/instance # MESMO volume de DB
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      # Garante que o Worker use o caminho do volume
+      DATABASE_URL: sqlite:////app/instance/projeto.db
+    depends_on:
+      - web # Espera o Flask (que cria o DB)
+      - rabbitmq
+    networks:
+      - estuda_ai_net
+    # Comando para INICIAR o Worker
+    command: python worker.py
+
+networks:
+  estuda_ai_net:
+    driver: bridge
+
+# Volume Compartilhado
+volumes:
+  uploads_volume: # O Docker gerencia este volume e o compartilha.
+
+
