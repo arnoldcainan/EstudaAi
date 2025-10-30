@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from app.services.ai_processor import process_study_material
@@ -136,3 +136,38 @@ def novo_estudo():
                 os.remove(file_path)
             flash(f"❌ Erro ao iniciar a tarefa: {e}. Tente novamente.", 'danger')
             return redirect(url_for('novo_estudo'))
+
+@app.route('/estudo/<int:estudo_id>')
+@login_required
+def visualizar_estudo(estudo_id):
+    """
+    Exibe um único estudo processado, com seu resumo e QCM.
+    """
+    # 1. Busca o estudo e garante que ele existe
+    # (Usando database.session.get, que é o padrão moderno do SQLAlchemy)
+    estudo = database.session.get(Estudo, estudo_id)
+    if not estudo:
+        abort(404)  # Estudo não encontrado
+
+    # 2. (IMPORTANTE) Garante que o usuário logado é o dono do estudo
+    if estudo.user_id != current_user.id:
+        abort(403)  # Proibido (Forbidden), não é o dono
+
+    # 3. (IMPORTANTE) Garante que o estudo está 'pronto'
+    #    Se não estiver, redireciona de volta ao painel
+    if estudo.status != 'pronto':
+        flash('Este material ainda está sendo processado ou falhou.', 'info')
+        return redirect(url_for('painel_usuario'))
+
+    # 4. Busca as questões relacionadas
+    #    (O .all() executa a query, já que a relação é 'lazy')
+    questoes_list = estudo.questoes.all()
+
+    # 5. Renderiza um *novo* template que criaremos no Passo 2
+    return render_template(
+        'user/visualizar_estudo.html',
+        usuario=current_user,
+        estudo=estudo,
+        questoes=questoes_list,
+        titulo_pagina=estudo.titulo
+    )
