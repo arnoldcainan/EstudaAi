@@ -31,8 +31,6 @@ def require_api_key(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         api_key = request.headers.get('X-API-Key')
-
-        # acessa corretamente a API_KEY do app.config
         if api_key != current_app.config['API_KEY']:
             return jsonify({'error': 'Unauthorized access'}), 401
 
