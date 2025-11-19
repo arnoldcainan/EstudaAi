@@ -101,72 +101,105 @@
 
 
 <section class="section" data-aos="fade-up" data-aos-delay="150">
-    <h2 class="h4 fw-bold mb-4" style="color: var(--text-primary);"><i class="bi bi-journals me-2"></i> Meus Materiais de Estudo</h2>
 
-    {# Botoes de Acao (MANTIDOS) #}
-    <div class="d-flex align-items-center justify-content-between mb-2">
-      <h4 class="m-0">Seus últimos resumos</h4>
-      <div class="d-flex gap-2">
-        <a href="{{ url_for('painel_usuario') }}" class="btn-outline-gradient btn-sm">
-          <i class="bi bi-clock-history"></i> Ver todos
-        </a>
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+            <h2 class="h4 fw-bold m-0" style="color: var(--text-primary);">
+                <i class="bi bi-journals me-2"></i> Meus Materiais
+            </h2>
+            <small class="text-muted">
+                Média Geral: <span class="fw-bold text-success">{{ score_medio }}%</span>
+                • Pendentes: <span class="fw-bold text-warning">{{ qtd_pendentes }}</span>
+            </small>
+        </div>
+
         <a href="{{ url_for('novo_estudo') }}" class="btn-gradient btn-sm">
-          <i class="bi bi-magic"></i> Novo Estudo
+          <i class="bi bi-plus-lg"></i> Novo Estudo
         </a>
-      </div>
     </div>
 
-
-    {# Lista horizontal de estudos (AGORA USANDO DADOS REAIS: ultimos_estudos) #}
     {% if ultimos_estudos %}
-      <div class="h-scroll">
-        {% for estudo in ultimos_estudos %}
-        <div class="card-soft p-3">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="fw-bold">{{ estudo.titulo|truncate(35) }}</div>
-              <div class="text-secondary small">
-                Criado em: {{ estudo.data_criacao.strftime('%d/%m/%Y %H:%M') }}
+      <div class="d-flex flex-column gap-3"> {% for estudo in ultimos_estudos %}
+
+        {% set border_class = 'border-light' %}
+        {% if estudo.status == 'processando' %}
+            {% set border_class = 'border-warning' %}
+        {% elif estudo.foi_respondido %}
+            {% set border_class = 'border-success' %}
+        {% endif %}
+
+        <div class="card-soft p-4 shadow-sm {{ border_class }}" style="border-left: 5px solid
+            {% if estudo.status == 'processando' %} #f1c40f
+            {% elif not estudo.foi_respondido and estudo.status == 'pronto' %} #e67e22
+            {% elif estudo.foi_respondido %} #2ecc71
+            {% else %} #e74c3c {% endif %};">
+
+          <div class="row align-items-center">
+
+            <div class="col-md-6 mb-3 mb-md-0">
+              <h5 class="fw-bold mb-1 text-dark">{{ estudo.titulo }}</h5>
+              <div class="text-secondary small mb-2">
+                <i class="bi bi-calendar-event"></i> {{ estudo.data_criacao.strftime('%d/%m/%Y às %H:%M') }}
               </div>
+
+              {% if estudo.status == 'processando' %}
+                  <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Processando IA...</span>
+              {% elif estudo.status == 'erro' %}
+                  <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> Falha no processamento</span>
+              {% else %}
+                  <span class="badge bg-light text-dark border">Resumo Disponível</span>
+
+                  {% if estudo.foi_respondido %}
+                    <span class="badge {% if estudo.aproveitamento >= 70 %}bg-success{% elif estudo.aproveitamento >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                        Nota: {{ estudo.aproveitamento }}%
+                    </span>
+                  {% else %}
+                    <span class="badge bg-info text-dark">QCM Pendente</span>
+                  {% endif %}
+              {% endif %}
             </div>
 
-            {% if estudo.status == 'pronto' %}
-                <a href="{{ url_for('visualizar_estudo', estudo_id=estudo.id) }}" class="btn-outline-gradient btn-sm">Abrir</a>
-            {% elif estudo.status == 'processando' %}
-                <button class="btn btn-sm btn-outline-secondary" disabled>
-                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
-                    Processando...
-                </button>
-            {% else %}
-                <button class="btn btn-sm btn-outline-danger" disabled>Falha</button>
-            {% endif %}
-          </div>
+            <div class="col-md-3 mb-3 mb-md-0 text-md-center">
+                {% if estudo.status == 'pronto' %}
+                    <div class="small text-muted">Questões</div>
+                    {% if estudo.foi_respondido %}
+                        <div class="h5 fw-bold m-0">{{ estudo.qtd_acertos }} / {{ estudo.total_questoes }}</div>
+                        <small class="text-success">Acertos</small>
+                    {% else %}
+                        <div class="h5 fw-bold m-0">{{ estudo.total_questoes }}</div>
+                        <small class="text-warning">Para responder</small>
+                    {% endif %}
+                {% endif %}
+            </div>
 
-          <div class="mt-2 d-flex flex-wrap gap-2">
-            <span class="pill fw-bold" style="background:
-              {% if estudo.status == 'pronto' %} var(--accent-light); border-color:var(--accent-color); color:var(--dark-color);
-              {% elif estudo.status == 'processando' %} #ffebcc; border-color:#ff9900;
-              {% else %} #fdd; border-color:#e74c3c;
-              {% endif %};">
-                <i class="bi bi-{{ 'check-circle' if estudo.status == 'pronto' else ('hourglass' if estudo.status == 'processando' else 'x-octagon') }}"></i>
-                Status: {{ estudo.status|capitalize }}
-            </span>
+            <div class="col-md-3 text-end">
+                {% if estudo.status == 'pronto' %}
+                    <a href="{{ url_for('visualizar_estudo', estudo_id=estudo.id) }}" class="btn w-100
+                       {% if estudo.foi_respondido %}btn-outline-secondary{% else %}btn-gradient{% endif %}">
+                        {% if estudo.foi_respondido %}
+                            <i class="bi bi-eye"></i> Rever
+                        {% else %}
+                            <i class="bi bi-pencil-square"></i> Responder
+                        {% endif %}
+                    </a>
+                {% elif estudo.status == 'processando' %}
+                    <button class="btn btn-light w-100 text-muted" disabled>Aguarde...</button>
+                {% endif %}
+            </div>
 
-            {% if estudo.status == 'pronto' %}
-                <span class="pill">
-                    QCM: Pendente
-                </span>
-            {% endif %}
           </div>
         </div>
         {% endfor %}
       </div>
     {% else %}
-        <div class="card-soft p-3 text-secondary">
-            Você ainda não gerou nenhum resumo. Clique em <a href="{{ url_for('novo_estudo') }}" class="text-decoration-none fw-bold" style="color: var(--primary-color);">Novo Estudo</a> para começar!
+        <div class="text-center py-5 card-soft">
+            <i class="bi bi-folder2-open display-1 text-muted opacity-25"></i>
+            <h3 class="h5 text-secondary mt-3">Nenhum estudo encontrado</h3>
+            <p>Gere seu primeiro material agora mesmo.</p>
+            <a href="{{ url_for('novo_estudo') }}" class="btn btn-primary mt-2">Começar</a>
         </div>
     {% endif %}
-  </section>
+</section>
 
 </div>
 {% endblock %}

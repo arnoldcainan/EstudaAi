@@ -3,13 +3,8 @@ from datetime import datetime, date
 from flask_login import UserMixin
 from pytz import timezone
 
-
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Text
-from sqlalchemy.orm import relationship
 import json
 
-from sqlalchemy import JSON, UniqueConstraint
-from sqlalchemy.ext.mutable import MutableDict
 
 
 @login_manager.user_loader
@@ -56,13 +51,41 @@ class Estudo(database.Model):
     questoes = database.relationship("Questao", backref="estudo", lazy='dynamic', cascade="all, delete-orphan")
     usuario = database.relationship("Usuario")
 
+    @property
+    def total_questoes(self):
+        """Retorna o número total de questões deste estudo."""
+        return self.questoes.count()
+
+    @property
+    def qtd_acertos(self):
+        """Conta quantas questões estão marcadas como corretas."""
+        return self.questoes.filter_by(correta=True).count()
+
+    @property
+    def foi_respondido(self):
+        """
+        Verifica se o usuário já respondeu (baseado se há respostas salvas).
+        Retorna True se houver pelo menos uma resposta salva.
+        """
+        # Verifica se existe alguma questão com resposta_usuario preenchida
+        return self.questoes.filter(Questao.resposta_usuario != None).count() > 0
+
+    @property
+    def aproveitamento(self):
+        """Calcula a porcentagem de acertos (0 a 100)."""
+        total = self.total_questoes
+        if total == 0:
+            return 0
+        return int((self.qtd_acertos / total) * 100)
+
+
+
 
 class Questao(database.Model):
     __tablename__ = 'questoes'
 
     id = database.Column(database.Integer, primary_key=True)
     estudo_id = database.Column(database.Integer, database.ForeignKey('estudos.id'), nullable=False)
-
     pergunta = database.Column(database.Text, nullable=False)
 
     # Armazena as opções como TEXT (string JSON)
@@ -71,4 +94,14 @@ class Questao(database.Model):
 
     # Campos de resultado do usuário
     resposta_usuario = database.Column(database.String(255), nullable=True)
-    correta = database.Column(database.Boolean, nullable=True)
+    correta = database.Column(database.Boolean, default=False)
+
+    @property
+    def opcoes(self):
+        """Converte a string JSON armazenada no banco para uma lista Python."""
+        try:
+            if self.opcoes_json:
+                return json.loads(self.opcoes_json)
+            return []
+        except ValueError:
+            return []

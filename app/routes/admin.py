@@ -8,13 +8,6 @@ from werkzeug.utils import secure_filename
 
 from app.services.ai_health import deepseek_healthcheck
 
-from app.utils import extract_youtube_id, thumbnail_from_id, slugify
-
-
-from datetime import datetime, timedelta
-from sqlalchemy import func
-from dotenv import load_dotenv
-
 
 import os
 

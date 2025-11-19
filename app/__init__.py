@@ -71,6 +71,7 @@ from app import models
 #     print("Base de dados já existente")
 # # Cria tabelas se ainda não existirem; sem "drop_all"
 
+
 with app.app_context():
     inspector = sqlalchemy.inspect(database.engine)
     if "usuario" not in inspector.get_table_names():
