@@ -83,7 +83,6 @@ def to_brazilian_time(dt):
         dt = dt.replace(tzinfo=pytz.UTC)
     return dt.astimezone(tz).strftime('%d/%m/%Y %H:%M')
 
-# ---------- registro ----------
 def register_template_filters(app):
     filters = {
         "asdict": asdict,

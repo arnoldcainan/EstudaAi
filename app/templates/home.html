@@ -90,11 +90,63 @@ Estuda AI - Domine Seu Conhecimento com Inteligência
   /* Seção Hero */
   .hero-section {
       position: relative;
+      /* Remove height fixa no mobile para não cortar conteúdo */
       min-height: 100vh;
-      background: var(--bg-gradient-primary); /* Usa o novo Indigo/Roxo */
+      padding-top: 80px; /* Espaço extra no topo */
+      padding-bottom: 60px;
+      background: var(--bg-gradient-primary);
       display: flex;
       align-items: center;
       overflow-x: hidden;
+ }
+
+ .hero-title {
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--white);
+      /* Responsividade do Texto */
+      font-size: 2.5rem;
+  }
+  .hero-subtitle {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 2rem;
+      font-weight: 300;
+  }
+
+  /* MEDIA QUERIES (O Segredo do Mobile) */
+  @media (min-width: 992px) {
+      .hero-title {
+          font-size: 3.5rem; /* Maior no Desktop */
+      }
+      .hero-subtitle {
+          font-size: 1.25rem;
+      }
+  }
+
+  @media (max-width: 768px) {
+      .hero-section {
+          text-align: center; /* Centraliza tudo no celular */
+      }
+
+      .hero-title {
+          font-size: 2rem; /* Menor no celular para não estourar */
+      }
+
+      /* Ajuste dos botões no mobile */
+      .d-flex.gap-3 {
+          gap: 1rem !important;
+      }
+
+      .btn-lg {
+          width: 100%; /* Botões ocupam largura total no celular */
+          margin-bottom: 10px;
+      }
+
+      /* Ícone gigante */
+      .hero-icon-container {
+          margin-top: 3rem; /* Separa o ícone do texto no mobile */
+      }
   }
 
   /* NOVO: Estilo para Cartões de Arquitetura (Substituindo os Programas) */
@@ -125,59 +177,62 @@ Estuda AI - Domine Seu Conhecimento com Inteligência
 {% block content %}
 <body>
     <section id="home" class="hero-section">
-        <div class="floating-element">
-            <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-        </div>
-        <div class="floating-element">
-            <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 30%;"></div>
-        </div>
-        <div class="floating-element">
-            <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 20%;"></div>
-        </div>
+            <div class="floating-element" style="top: 10%; left: 5%;">...</div>
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 order-1 order-lg-1"> <div class="hero-content" data-aos="fade-right">
+                            <h1 class="hero-title mb-3">
+                                Domine Qualquer Assunto com <span class="text-warning">Inteligência Artificial</span>
+                            </h1>
+                            <p class="hero-subtitle mb-4">
+                                Faça upload de seus PDFs/DOCX e deixe a IA gerar <strong>resumos focados</strong>, <strong>testes de fixação</strong> e feedback em segundos.
+                            </p>
 
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-7">
-                    <div class="hero-content" data-aos="fade-right">
-                        <h1 class="hero-title">
-                            Domine Qualquer Assunto com <span class="text-gradient-secondary">Inteligência Artificial</span>
-                        </h1>
-                        <p class="hero-subtitle">
-                            Faça upload de seus PDFs/DOCX e deixe a IA gerar **resumos focados**, **testes de fixação** e **feedback de estudo** em segundos.
-                        </p>
-                        <div class="d-flex flex-column flex-md-row gap-3">
-                            <a href="{{ url_for('createlogin') }}" class="btn-gradient btn-lg">
-                                <i class="bi bi-book-fill"></i>
-                                Começar a Estudar Grátis
-                            </a>
-                            <a href="#architecture" class="btn-outline-gradient btn-lg">
-                                <i class="bi bi-cpu"></i>
-                                Ver Arquitetura do Projeto
-                            </a>
-                        </div>
-                        <div class="hero-stats" data-aos="fade-up" data-aos-delay="300">
-                            <div class="hero-stat">
-                                <span class="hero-stat-number">2M+</span>
-                                <span class="hero-stat-label">Páginas Processadas</span>
+                            <div class="d-flex flex-column flex-md-row gap-3 justify-content-center justify-content-lg-start">
+                                <a href="{{ url_for('novo_estudo') }}" class="btn btn-light btn-lg fw-bold shadow">
+                                    <i class="bi bi-book-fill me-2"></i>Começar Agora
+                                </a>
+                                <a href="#architecture" class="btn btn-outline-light btn-lg fw-bold">
+                                    <i class="bi bi-cpu me-2"></i>Ver Arquitetura
+                                </a>
                             </div>
-                            <div class="hero-stat">
-                                <span class="hero-stat-number">98%</span>
-                                <span class="hero-stat-label">Satisfação de Usuários</span>
+
+                            <div class="hero-stats mt-5 d-flex justify-content-center justify-content-lg-start gap-4" data-aos="fade-up" data-aos-delay="300">
+                                <div class="hero-stat text-white">
+                                    <div class="h2 fw-bold hero-stat-number mb-0">2M+</div>
+                                    <small class="text-white-50">Páginas</small>
+                                </div>
+                                <div class="hero-stat text-white">
+                                    <div class="h2 fw-bold hero-stat-number mb-0">98%</div>
+                                    <small class="text-white-50">Aprovação</small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-5" data-aos="fade-left">
-                    <div class="text-center">
-                        <div style="width: 350px; height: 350px; background: rgba(255,255,255,0.1); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-book-half" style="font-size: 7rem; color: rgba(255,255,255,0.8);"></i>
-                            <i class="bi bi-cpu-fill" style="position: absolute; font-size: 2rem; color: rgba(255,255,255,0.9); top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+
+                    <div class="col-lg-5 order-2 order-lg-2 hero-icon-container" data-aos="fade-left">
+                        <div class="text-center">
+                            <div style="
+                                width: 280px; height: 280px;
+                                background: rgba(255,255,255,0.1);
+                                border-radius: 50%;
+                                margin: 0 auto;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                backdrop-filter: blur(5px);
+                                border: 1px solid rgba(255,255,255,0.2);
+                            ">
+                                <i class="bi bi-book-half" style="font-size: 6rem; color: rgba(255,255,255,0.9);"></i>
+                                <div style="position: absolute;">
+                                    <i class="bi bi-cpu-fill" style="font-size: 2.5rem; color: #00bcd4; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
     <section id="features" class="section">
@@ -301,37 +356,7 @@ Estuda AI - Domine Seu Conhecimento com Inteligência
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-6">
-                    <h5 class="text-white mb-3">Plataforma</h5>
-                    <ul class="footer-links">
-                        <li><a href="{{ url_for('home') }}#features" class="text-white">Recursos</a></li>
-                        <li><a href="{{ url_for('home') }}#architecture" class="text-white">Arquitetura</a></li>
-                        <li><a href="/pricing" class="text-white">Preços</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6">
-                    <h5 class="text-white mb-3">Suporte</h5>
-                    <ul class="footer-links">
-                        <li><a href="/help" class="text-white">Central de Ajuda</a></li>
-                        <li><a href="/contact" class="text-white">Contato</a></li>
-                        <li><a href="/faq" class="text-white">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6">
-                    <h5 class="text-white mb-3">Empresa</h5>
-                    <ul class="footer-links">
-                        <li><a href="/about" class="text-white">Sobre Nós</a></li>
-                        <li><a href="/blog" class="text-white">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6">
-                    <h5 class="text-white mb-3">Legal</h5>
-                    <ul class="footer-links">
-                        <li><a href="/privacy" class="text-white">Privacidade</a></li>
-                        <li><a href="/terms" class="text-white">Termos de Uso</a></li>
-                    </ul>
-                </div>
-            </div>
+
             <div class="footer-bottom">
                 <p class="text-white-50">&copy; 2025 Estuda AI. Todos os direitos reservados. Desenvolvido com ❤️ para aprimorar o conhecimento.</p>
             </div>

@@ -24,8 +24,16 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
+        html {
+            scroll-behavior: smooth;
+          }
+
       body {
-        padding-top: 50px; /* espaço para a navbar */
+        padding-top: 70px;
+        overflow-x: hidden; /* espaço para a navbar */
+      }
+       @media (max-width: 576px) {
+        body {padding-top: 60px;
       }
     </style>
 
