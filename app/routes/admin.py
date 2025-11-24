@@ -7,10 +7,7 @@ from app.decorators import admin_required
 from werkzeug.utils import secure_filename
 
 from app.services.ai_health import deepseek_healthcheck
-
-
 import os
-
 
 @app.route('/admin', methods=['GET'])
 @login_required
@@ -21,7 +18,6 @@ def admin_dashboard():
     return render_template('admin/admin_dashboard.html',
                            total_usuarios=total_usuarios,
                            ai_selftest_enabled=app.config.get('ENABLE_AI_SELFTEST', False))
-
 
 @app.route("/create_user", methods=['GET', 'POST'])
 @login_required
@@ -48,7 +44,6 @@ def admin_create_user():
 
     return render_template('admin/admin_create_user.html', form=form)
 
-
 @app.route('/admin/usuarios', methods=['GET'])
 @login_required
 @admin_required
@@ -70,7 +65,6 @@ def listar_usuarios():
 
     usuarios = query.all()
     return render_template('admin/admin_listar_usuarios.html', usuarios=usuarios)
-
 
 @app.route('/admin/usuario/<int:usuario_id>', methods=['GET'])
 @login_required
@@ -138,8 +132,6 @@ def upload_file():
     flash('Arquivo salvo com sucesso!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-
-#########TESTE IA
 @app.route("/_ai/selftest", methods=["GET"])
 @login_required
 @admin_required

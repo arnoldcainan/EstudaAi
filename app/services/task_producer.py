@@ -1,4 +1,3 @@
-# app/services/task_producer.py
 import pika
 import json
 import logging
@@ -6,25 +5,19 @@ import os
 
 log = logging.getLogger(__name__)
 
-# Configurações do RabbitMQ: Lendo do .env ou variáveis de ambiente do Docker
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
 RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
-RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'user_fallback') # Use um fallback seguro
+RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'user_fallback')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'password_fallback')
-VHOST = os.getenv('RABBITMQ_VHOST', '/') # VHost padrão
+VHOST = os.getenv('RABBITMQ_VHOST', '/')
 QUEUE_NAME = 'ai_task_queue'
 
 
 def send_ai_task(estudo_id: int, filename: str, user_id: int):
     connection = None
     try:
-        # --- DEBUG LOG ---
         log.info(f"Tentando conectar ao RabbitMQ em: {RABBITMQ_HOST}:{RABBITMQ_PORT}")
-        # -----------------
-
         credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
-
-        # Tenta conectar
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(
                 host=RABBITMQ_HOST,
@@ -34,12 +27,10 @@ def send_ai_task(estudo_id: int, filename: str, user_id: int):
             )
         )
 
-        # CRÍTICO: Se a conexão falhar acima, ele vai pro 'except'.
-        # Se connection for None aqui, o erro 'NoneType' aconteceria na linha abaixo.
         if connection is None:
             raise ConnectionError("O objeto de conexão retornou vazio (None).")
 
-        channel = connection.channel()  # <--- O erro acontecia aqui
+        channel = connection.channel()
 
         # Declara a fila
         channel.queue_declare(queue=QUEUE_NAME, durable=True)
@@ -70,5 +61,3 @@ def send_ai_task(estudo_id: int, filename: str, user_id: int):
     finally:
         if connection and not connection.is_closed:
             connection.close()
-
-# --- FIM DO PRODUTOR ---

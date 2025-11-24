@@ -1,13 +1,10 @@
-# app/filters.py
 from __future__ import annotations
-
 import json
 from datetime import date, datetime, timedelta
 import pytz
 from pytz import timezone
 from markupsafe import Markup, escape
 
-# ---------- helpers ----------
 def _coerce_dict(v):
     if isinstance(v, dict):
         return v
@@ -18,7 +15,6 @@ def _coerce_dict(v):
             return {}
     return {}
 
-# ---------- filtros ----------
 def asdict(v):
     return _coerce_dict(v)
 

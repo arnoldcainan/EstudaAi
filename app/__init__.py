@@ -10,14 +10,12 @@ import os
 
 load_dotenv()
 
-# Caminho explícito para templates e static
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__,
             template_folder=os.path.join(base_dir, 'templates'),
             static_folder=os.path.join(base_dir, 'static'))
 
-# Demais configurações seguem normalmente...
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///projeto.db')
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
@@ -41,22 +39,18 @@ app.config['GA_TRACKING_ID'] = 'G-QQ23BG6WBV'
 app.config['API_KEY'] = os.getenv('API_KEY')
 
 
-# Diretório base para uploads dentro da pasta static
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Inicializações
 database = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
-# Configurações do Flask-Login
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-# Inicialização do banco de dados e importação de rotas
 from app import models
 
 

@@ -38,11 +38,8 @@ class Estudo(database.Model):
 
     id = database.Column(database.Integer, primary_key=True)
     user_id = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
-
     titulo = database.Column(database.String(255), nullable=False)
     data_criacao = database.Column(database.DateTime, default=now_brazil)
-
-    # Conteúdo principal
     resumo = database.Column(database.Text, nullable=False)
     status = database.Column(database.String(50), default='pronto', nullable=False)
     caminho_arquivo = database.Column(database.String(512), nullable=True)
@@ -87,12 +84,9 @@ class Questao(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     estudo_id = database.Column(database.Integer, database.ForeignKey('estudos.id'), nullable=False)
     pergunta = database.Column(database.Text, nullable=False)
-
     # Armazena as opções como TEXT (string JSON)
     opcoes_json = database.Column(database.Text, nullable=False)
     resposta_correta = database.Column(database.String(255), nullable=False)
-
-    # Campos de resultado do usuário
     resposta_usuario = database.Column(database.String(255), nullable=True)
     correta = database.Column(database.Boolean, default=False)
 

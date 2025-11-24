@@ -5,11 +5,7 @@ from app.forms import FormCriarConta, FormSolicitarRecuperacao, FormRedefinirSen
 from app.models import Usuario
 from itsdangerous import SignatureExpired, BadSignature
 from flask_mail import Message
-
-
 import base64
-from io import BytesIO
-from PIL import Image
 
 
 @app.route("/createlogin", methods=['GET', 'POST'])
@@ -27,7 +23,7 @@ def createlogin():
             whatsapp=form_criarconta.whatsapp.data,
             email=form_criarconta.email.data.lower(),
             senha=senha_crypt,
-            is_validated=True  # por segurança, já cria como não validado
+            is_validated=True
         )
         database.session.add(usuario)
         database.session.commit()
@@ -86,10 +82,6 @@ def resetar_senha(token):
             return redirect(url_for('login'))
 
     return render_template('resetar-senha.html', form=form, token=token)
-
-
-
-
 
 def converter_imagem_para_base64(file_storage):
     """

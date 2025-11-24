@@ -1,4 +1,3 @@
-# app/services/ai_health.py
 from app.integrations.deepseek import chat, DeepSeekError
 
 def deepseek_healthcheck() -> dict:
